@@ -46,6 +46,7 @@ type Battery struct {
 type Building struct {
 	Id        int    `json:"id"`
 	FullName  string `json:"fullName"`
+	CellPhone string `json:"cellPhone"`
 	Email     string `json:"email"`
 	TechEmail string `json:"techEmail"`
 	TechName  string `json:"techName"`
@@ -63,6 +64,11 @@ type Lead struct {
 	Description    string `json:"description"`
 	Type           string `json:"type"`
 }
+
+type Building_detail {
+	Building_id: 	int    `json:"building_id"`
+	InfoKey: 		string `json:"infoKey"`
+	InfoValue: 		string `json:"infoValue"`
 
 func main() {
 	fmt.Println("allo")
@@ -210,12 +216,12 @@ func getBuildingList(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
-	results, err := db.Query("SELECT DISTINCT b.id, b.fullName, b.email,b.techEmail, b.techName, b.techPhone, b.customer_id, b.address_id FROM buildings b JOIN batteries b2 ON b2.building_id=b.id JOIN `columns` c ON b2.id=c.battery_id JOIN elevators e ON e.column_id=c.id WHERE b2.status_id=(SELECT s2.id FROM statuses s2 WHERE s2.name='intervention') OR c.status_id=(SELECT s2.id FROM statuses s2 WHERE s2.name='intervention') OR e.status_id=(SELECT s2.id FROM statuses s2 WHERE s2.name='intervention');")
+	results, err := db.Query("SELECT DISTINCT b.id, b.fullName, b.cellPhone, b.email,b.techEmail, b.techName, b.techPhone, b.customer_id, b.address_id FROM buildings b JOIN batteries b2 ON b2.building_id=b.id JOIN `columns` c ON b2.id=c.battery_id JOIN elevators e ON e.column_id=c.id WHERE b2.status_id=(SELECT s2.id FROM statuses s2 WHERE s2.name='intervention') OR c.status_id=(SELECT s2.id FROM statuses s2 WHERE s2.name='intervention') OR e.status_id=(SELECT s2.id FROM statuses s2 WHERE s2.name='intervention');")
 	buildings := []Building{}
 	for results.Next() {
 		var e Building
 		// for each row, scan the result into our tag composite object
-		err = results.Scan(&e.Id, &e.FullName, &e.Email, &e.TechEmail, &e.TechName, &e.TechPhone, &e.Customer, &e.Address)
+		err = results.Scan(&e.Id, &e.FullName, &e.CellPhone, &e.Email, &e.TechEmail, &e.TechName, &e.TechPhone, &e.Customer, &e.Address)
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
@@ -246,6 +252,45 @@ func getLeadList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ls)
 }
 
+func updateTechPhone(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	vars := mux.Vars(r)
+	id := vars["id"]
+	phone := vars["phone"]
+	results, err := db.Query("UPDATE buildings SET techPhone='" + phone + "' WHERE id = " + id + ";")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	getBuildingList(w, r)
+	defer results.Close()
+}
+
+func getBuildingDetails(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	vars := mux.Vars(r)
+	key := vars["id"]
+	bd := []Building_detail{}
+	results, err := db.Query("SELECT building_details.id, building_details.infoKey, building_details.infoValue FROM building_details JOIN buildings b ON building_details.id=b.id WHERE b.id =" + key + ";")
+	for results.Next() {
+		var b Building_detail
+		// for each row, scan the result into our tag composite object
+		err = results.Scan(&b.Building_id, &b.InfoKey, &b.InfoValue)
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+		// and then print out the tag's Name attribute
+		bd=append(bd,b)
+	}
+	json.NewEncoder(w).Encode(bd)
+}
+
 func handleRequests() {
 	// creates a new instance of a mux router
 	myRouter := mux.NewRouter().StrictSlash(true)
@@ -259,9 +304,13 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/elevator/{id}/{status}", updateElevator).Methods("PUT")
 	myRouter.HandleFunc("/api/column/{id}/{status}", updateColumn).Methods("PUT")
 	myRouter.HandleFunc("/api/battery/{id}/{status}", updateBattery).Methods("PUT")
+	myRouter.HandleFunc("/api/building/{id}/{phone}", updateTechPhone).Methods("PUT")
+	myRouter.HandleFunc("/api/buildingdetails/{id}", getBuildingDetails).Methods("GET")
 	// finally, instead of passing in nil, we want
 	// to pass in our newly created router as the second
 	// argument
 	port := os.Getenv("PORT")
 	log.Fatal(http.ListenAndServe(":"+port, myRouter))
 }
+
+
