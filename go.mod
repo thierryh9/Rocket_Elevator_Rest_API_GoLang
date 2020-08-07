@@ -1,3 +1,3 @@
-module Rocket_Elevator_Rest_API_GoLang
+module main
 
 go 1.14
