@@ -43,14 +43,15 @@ type Battery struct {
 	Status string `json:"status"`
 }
 
-type Building_detail {
-	Building_id: 	int    `json:"building_id"`
-	InfoKey: 		string `json:"infoKey"`
-	InfoValue: 		string `json:"infoValue"`
+type Building_detail struct {
+	Building_id 	int    `json:"building_id"`
+	InfoKey			string `json:"infoKey"`
+	InfoValue 		string `json:"infoValue"`
 
 type Building struct {
 	Id        int    `json:"id"`
 	FullName  string `json:"fullName"`
+	CellPhone string `json:"cellPhone"`
 	Email     string `json:"email"`
 	TechEmail string `json:"techEmail"`
 	TechName  string `json:"techName"`
