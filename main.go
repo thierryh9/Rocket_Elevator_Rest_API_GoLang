@@ -195,6 +195,28 @@ func getBattery(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getPhone(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	vars := mux.Vars(r)
+	key := vars["id"]
+	results, err := db.Query("SELECT DISTINCT b.id, b.fullName, b.cellPhone, b.email,b.techEmail, b.techName, b.techPhone, b.customer_id, b.address_id FROM buildings b WHERE b.id =" + key)
+
+	if results.Next() {
+		var e Building
+		// for each row, scan the result into our tag composite object
+		err = results.Scan(&e.Id, &e.FullName, &e.CellPhone, &e.Email, &e.TechEmail, &e.TechName, &e.TechPhone, &e.Customer, &e.Address)
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+		// and then print out the tag's Name attribute
+		json.NewEncoder(w).Encode(e)
+	}
+}
+
 func updateBattery(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
 	if err != nil {
@@ -247,7 +269,7 @@ func updateTechPhone(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
-	getBuildingList(w, r)
+	getPhone(w, r)
 	defer results.Close()
 }
 
