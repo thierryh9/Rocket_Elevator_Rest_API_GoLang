@@ -20,13 +20,13 @@ https://polar-atoll-59739.herokuapp.com/api/lead
 ### GET data
 ```diff
 ! This is a GET method
-https://polar-atoll-59739.herokuapp.com/elevator
+https://polar-atoll-59739.herokuapp.com/api/elevator
 ```
 return a list of inactive elevators
 
 ```diff
 ! This is a GET method
-https://polar-atoll-59739.herokuapp.com/elevator/id
+https://polar-atoll-59739.herokuapp.com/api/elevator/id
 ```
 you can change id by a number to get the elevator related to it
 ### Update data
