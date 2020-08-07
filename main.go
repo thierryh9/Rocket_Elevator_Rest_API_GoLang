@@ -51,7 +51,6 @@ type Building_detail {
 type Building struct {
 	Id        int    `json:"id"`
 	FullName  string `json:"fullName"`
-	CellPhone string `json:"cellPhone"`
 	Email     string `json:"email"`
 	TechEmail string `json:"techEmail"`
 	TechName  string `json:"techName"`
@@ -69,7 +68,6 @@ type Lead struct {
 	Description    string `json:"description"`
 	Type           string `json:"type"`
 }
-
 
 func main() {
 	fmt.Println("allo")
@@ -316,5 +314,6 @@ func handleRequests() {
 	port := os.Getenv("PORT")
 	log.Fatal(http.ListenAndServe(":"+port, myRouter))
 } 
+
 
 
