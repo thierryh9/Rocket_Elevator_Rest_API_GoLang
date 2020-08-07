@@ -63,13 +63,7 @@ type Lead struct {
 	Type           string `json:"type"`
 }
 
-var Articles []Article
-
 func main() {
-	Articles = []Article{
-		Article{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
-		Article{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
-	}
 	fmt.Println("allo")
 	handleRequests()
 }
