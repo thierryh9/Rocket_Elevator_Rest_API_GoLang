@@ -43,6 +43,11 @@ type Battery struct {
 	Status string `json:"status"`
 }
 
+type Building_detail {
+	Building_id: 	int    `json:"building_id"`
+	InfoKey: 		string `json:"infoKey"`
+	InfoValue: 		string `json:"infoValue"`
+
 type Building struct {
 	Id        int    `json:"id"`
 	FullName  string `json:"fullName"`
@@ -65,10 +70,6 @@ type Lead struct {
 	Type           string `json:"type"`
 }
 
-type Building_detail {
-	Building_id: 	int    `json:"building_id"`
-	InfoKey: 		string `json:"infoKey"`
-	InfoValue: 		string `json:"infoValue"`
 
 func main() {
 	fmt.Println("allo")
@@ -210,6 +211,46 @@ func updateBattery(w http.ResponseWriter, r *http.Request) {
 	defer results.Close()
 }
 
+func getBuildingDetails(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	vars := mux.Vars(r)
+	key := vars["id"]
+	bd := []Building_detail{}
+	results, err := db.Query("SELECT building_details.id, building_details.infoKey, building_details.infoValue FROM building_details JOIN buildings b ON building_details.id=b.id WHERE b.id =" + key + ";")
+	for results.Next() {
+		var b Building_detail
+		// for each row, scan the result into our tag composite object
+		err = results.Scan(&b.Building_id, &b.InfoKey, &b.InfoValue)
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+		// and then print out the tag's Name attribute
+		bd=append(bd,b)
+	}
+	json.NewEncoder(w).Encode(bd)
+}
+
+
+func updateTechPhone(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	vars := mux.Vars(r)
+	id := vars["id"]
+	phone := vars["phone"]
+	results, err := db.Query("UPDATE buildings SET techPhone='" + phone + "' WHERE id = " + id + ";")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	getBuildingList(w, r)
+	defer results.Close()
+}
+
 func getBuildingList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
@@ -252,49 +293,14 @@ func getLeadList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ls)
 }
 
-func updateTechPhone(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
-	}
-	vars := mux.Vars(r)
-	id := vars["id"]
-	phone := vars["phone"]
-	results, err := db.Query("UPDATE buildings SET techPhone='" + phone + "' WHERE id = " + id + ";")
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
-	}
-	getBuildingList(w, r)
-	defer results.Close()
-}
 
-func getBuildingDetails(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	db, err := sql.Open("mysql", "codeboxx:Codeboxx1!@tcp(codeboxx.cq6zrczewpu2.us-east-1.rds.amazonaws.com:3306)/ThierryHarvey")
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
-	}
-	vars := mux.Vars(r)
-	key := vars["id"]
-	bd := []Building_detail{}
-	results, err := db.Query("SELECT building_details.id, building_details.infoKey, building_details.infoValue FROM building_details JOIN buildings b ON building_details.id=b.id WHERE b.id =" + key + ";")
-	for results.Next() {
-		var b Building_detail
-		// for each row, scan the result into our tag composite object
-		err = results.Scan(&b.Building_id, &b.InfoKey, &b.InfoValue)
-		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
-		}
-		// and then print out the tag's Name attribute
-		bd=append(bd,b)
-	}
-	json.NewEncoder(w).Encode(bd)
-}
 
 func handleRequests() {
 	// creates a new instance of a mux router
 	myRouter := mux.NewRouter().StrictSlash(true)
 	// replace http.HandleFunc with myRouter.HandleFunc
+	myRouter.HandleFunc("/api/building/{id}/{phone}", updateTechPhone).Methods("PUT")
+	myRouter.HandleFunc("/api/buildingdetails/{id}", getBuildingDetails).Methods("GET")
 	myRouter.HandleFunc("/api/elevator/{id}", getElevator).Methods("GET")
 	myRouter.HandleFunc("/api/elevator/", getElevatorList).Methods("GET")
 	myRouter.HandleFunc("/api/column/{id}", getColumn).Methods("GET")
@@ -304,8 +310,6 @@ func handleRequests() {
 	myRouter.HandleFunc("/api/elevator/{id}/{status}", updateElevator).Methods("PUT")
 	myRouter.HandleFunc("/api/column/{id}/{status}", updateColumn).Methods("PUT")
 	myRouter.HandleFunc("/api/battery/{id}/{status}", updateBattery).Methods("PUT")
-	myRouter.HandleFunc("/api/building/{id}/{phone}", updateTechPhone).Methods("PUT")
-	myRouter.HandleFunc("/api/buildingdetails/{id}", getBuildingDetails).Methods("GET")
 	// finally, instead of passing in nil, we want
 	// to pass in our newly created router as the second
 	// argument
