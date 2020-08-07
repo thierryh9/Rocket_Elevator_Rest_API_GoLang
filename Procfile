@@ -1,1 +1,1 @@
-web: Rocket_Elevator_Rest_API_GOLang
+web: go run main.go
