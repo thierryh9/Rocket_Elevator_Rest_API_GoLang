@@ -90,7 +90,9 @@ BODY:
 {"status": "active"}
 ```
 you can change the active status by the status you want
--------------------BONUS-------------
+
+
+-------------------BONUS----------------
 ## Building details
 ### GET data
 
