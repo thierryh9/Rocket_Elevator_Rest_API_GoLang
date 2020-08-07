@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -261,5 +262,6 @@ func handleRequests() {
 	// finally, instead of passing in nil, we want
 	// to pass in our newly created router as the second
 	// argument
-	log.Fatal(http.ListenAndServe(":10000", myRouter))
+	port := os.Getenv("PORT")
+	log.Fatal(http.ListenAndServe(":"+port, myRouter))
 }
