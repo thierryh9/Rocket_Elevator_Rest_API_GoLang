@@ -47,6 +47,7 @@ type Building_detail struct {
 	Building_id 	int    `json:"building_id"`
 	InfoKey			string `json:"infoKey"`
 	InfoValue 		string `json:"infoValue"`
+}
 
 type Building struct {
 	Id        int    `json:"id"`
