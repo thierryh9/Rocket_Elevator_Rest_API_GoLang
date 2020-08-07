@@ -250,15 +250,15 @@ func handleRequests() {
 	// creates a new instance of a mux router
 	myRouter := mux.NewRouter().StrictSlash(true)
 	// replace http.HandleFunc with myRouter.HandleFunc
-	myRouter.HandleFunc("/elevator/{id}", getElevator).Methods("GET")
-	myRouter.HandleFunc("/elevator/", getElevatorList).Methods("GET")
-	myRouter.HandleFunc("/column/{id}", getColumn).Methods("GET")
-	myRouter.HandleFunc("/battery/{id}", getBattery).Methods("GET")
-	myRouter.HandleFunc("/lead/", getLeadList).Methods("GET")
-	myRouter.HandleFunc("/building/", getBuildingList).Methods("GET")
-	myRouter.HandleFunc("/elevator/{id}/{status}", updateElevator).Methods("PUT")
-	myRouter.HandleFunc("/column/{id}/{status}", updateColumn).Methods("PUT")
-	myRouter.HandleFunc("/battery/{id}/{status}", updateBattery).Methods("PUT")
+	myRouter.HandleFunc("/api/elevator/{id}", getElevator).Methods("GET")
+	myRouter.HandleFunc("/api/elevator/", getElevatorList).Methods("GET")
+	myRouter.HandleFunc("/api/column/{id}", getColumn).Methods("GET")
+	myRouter.HandleFunc("/api/battery/{id}", getBattery).Methods("GET")
+	myRouter.HandleFunc("/api/lead/", getLeadList).Methods("GET")
+	myRouter.HandleFunc("/api/building/", getBuildingList).Methods("GET")
+	myRouter.HandleFunc("/api/elevator/{id}/{status}", updateElevator).Methods("PUT")
+	myRouter.HandleFunc("/api/column/{id}/{status}", updateColumn).Methods("PUT")
+	myRouter.HandleFunc("/api/battery/{id}/{status}", updateBattery).Methods("PUT")
 	// finally, instead of passing in nil, we want
 	// to pass in our newly created router as the second
 	// argument
