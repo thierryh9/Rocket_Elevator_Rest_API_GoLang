@@ -90,3 +90,19 @@ BODY:
 {"status": "active"}
 ```
 you can change the active status by the status you want
+-------------------BONUS-------------
+## Building details
+### GET data
+
+```diff
+! This is a GET method
+https://polar-atoll-59739.herokuapp.com/api/buildingdetails/id
+```
+
+## Tech Phone
+### Update data
+
+```diff
+! This is a PUT method
+https://polar-atoll-59739.herokuapp.com/api/building/id/phone
+```
