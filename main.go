@@ -95,6 +95,7 @@ func getElevatorList(w http.ResponseWriter, r *http.Request) {
 		elevators = append(elevators, e)
 	}
 	json.NewEncoder(w).Encode(elevators)
+	defer results.Close()
 }
 
 func getElevator(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +117,7 @@ func getElevator(w http.ResponseWriter, r *http.Request) {
 		}
 		// and then print out the tag's Name attribute
 		json.NewEncoder(w).Encode(e)
+		defer results.Close()
 	}
 }
 
@@ -155,6 +157,7 @@ func getColumn(w http.ResponseWriter, r *http.Request) {
 		// and then print out the tag's Name attribute
 		json.NewEncoder(w).Encode(c)
 	}
+	defer results.Close()
 }
 
 func updateColumn(w http.ResponseWriter, r *http.Request) {
@@ -193,6 +196,7 @@ func getBattery(w http.ResponseWriter, r *http.Request) {
 		// and then print out the tag's Name attribute
 		json.NewEncoder(w).Encode(b)
 	}
+	defer results.Close()
 }
 
 func getPhone(w http.ResponseWriter, r *http.Request) {
@@ -215,6 +219,7 @@ func getPhone(w http.ResponseWriter, r *http.Request) {
 		// and then print out the tag's Name attribute
 		json.NewEncoder(w).Encode(e)
 	}
+	defer results.Close()
 }
 
 func updateBattery(w http.ResponseWriter, r *http.Request) {
@@ -254,6 +259,7 @@ func getBuildingDetails(w http.ResponseWriter, r *http.Request) {
 		bd=append(bd,b)
 	}
 	json.NewEncoder(w).Encode(bd)
+	defer results.Close()
 }
 
 
@@ -292,6 +298,7 @@ func getBuildingList(w http.ResponseWriter, r *http.Request) {
 		buildings = append(buildings, e)
 	}
 	json.NewEncoder(w).Encode(buildings)
+	defer results.Close()
 }
 
 func getLeadList(w http.ResponseWriter, r *http.Request) {
@@ -313,6 +320,7 @@ func getLeadList(w http.ResponseWriter, r *http.Request) {
 		ls = append(ls, l)
 	}
 	json.NewEncoder(w).Encode(ls)
+	defer results.Close()
 }
 
 
